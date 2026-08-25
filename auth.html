@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISL Translator - Authentication</title>
+    <style>
+         body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f4f4f4;
+            color: #ff6600; /* Updated to a bright orange color */
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            background-image: url("background.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+        .auth-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 350px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="date"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid #333;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #333;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .toggle-link {
+            margin-top: 15px;
+            display: block;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .toggle-link:hover {
+            text-decoration: underline;
+        }
+
+        .g-signin-btn {
+            margin-top: 20px;
+        }
+
+        .g-signin-btn button {
+            width: 100%;
+            background-color: #4285F4;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .g-signin-btn button:hover {
+            background-color: #357AE8;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Login Form -->
+        <div id="login-form" class="form-container active">
+            <h1>Login</h1>
+            <form action="login-action.html" method="post" onsubmit="return handleFormSubmit('login')">
+                <input type="email" id="login-email" name="email" placeholder="Email" required>
+                <input type="password" id="login-password" name="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <div class="g-signin-btn" id="gSignInBtn">
+                <!-- Google Sign-In Button will be dynamically inserted here -->
+            </div>
+            <a class="toggle-link" onclick="toggleForm('signup')">Don't have an account? Sign Up</a>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div id="signup-form" class="form-container">
+            <h1>Sign Up</h1>
+            <form action="signup-action.html" method="post" onsubmit="return handleFormSubmit('signup')">
+                <input type="text" id="signup-fullname" name="fullname" placeholder="Full Name" required>
+                <input type="email" id="signup-email" name="email" placeholder="Email" required>
+                <input type="password" id="signup-password" name="password" placeholder="Password" required>
+                <input type="date" id="signup-dob" name="dob" placeholder="Date of Birth" required>
+                <button type="submit">Sign Up</button>
+            </form>
+            <a class="toggle-link" onclick="toggleForm('login')">Already have an account? Login</a>
+        </div>
+    </div>
+
+    <!-- Load the Google Platform Library -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script>
+        function toggleForm(formType) {
+            if (formType === 'login') {
+                document.getElementById('login-form').classList.add('active');
+                document.getElementById('signup-form').classList.remove('active');
+            } else {
+                document.getElementById('login-form').classList.remove('active');
+                document.getElementById('signup-form').classList.add('active');
+            }
+        }
+
+        function onSuccess(googleUser) {
+            // Handle successful sign-in here
+            console.log('Google user:', googleUser);
+            // Redirect to home page
+            window.location.href = 'home.html';
+        }
+
+        function onError(error) {
+            console.error('Error during Google sign-in:', error);
+        }
+
+        function initGoogleSignIn() {
+            gapi.load('auth2', function() {
+                gapi.auth2.init({
+                    client_id: 'YOUR_CLIENT_ID.apps.googleusercontent.com'
+                }).then(function(auth2) {
+                    auth2.attachClickHandler('gSignInBtn', {}, onSuccess, onError);
+                });
+            });
+        }
+
+        function handleFormSubmit(formType) {
+            // You can add client-side form validation or other actions here
+            if (formType === 'login' || formType === 'signup') {
+                // Redirect to home page on form submit
+                window.location.href = 'home.html';
+                return false; // Prevent default form submission
+            }
+            return true; // Allow form submission
+        }
+
+        // Initialize Google Sign-In when the page loads
+        window.onload = initGoogleSignIn;
+    </script>
+</body>
+</html>
